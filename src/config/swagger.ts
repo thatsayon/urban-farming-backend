@@ -356,8 +356,16 @@ const options = {
 
     servers: [
       {
+        url: "https://urbanfarm.thatsayon.com/api",
+        description: "Production server"
+      },
+      {
+        url: "/api",
+        description: "Relative path (works across all environments)"
+      },
+      {
         url: "http://localhost:5000/api",
-        description: "Local server"
+        description: "Local development server"
       }
     ],
 
