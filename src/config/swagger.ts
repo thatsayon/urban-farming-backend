@@ -375,7 +375,10 @@ const options = {
   apis: [
     "src/modules/**/*.ts",
     "src/community/**/*.ts",
-    "src/config/swagger.ts"
+    "src/config/swagger.ts",
+    "dist/src/modules/**/*.js",
+    "dist/src/community/**/*.js",
+    "dist/src/config/swagger.js"
   ]
 };
 

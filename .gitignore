@@ -27,8 +27,6 @@ pids/
 # Environment variables
 # ------------------------------
 .env
-.env.*
-!.env.example
 
 # ------------------------------
 # Build output
