@@ -1,0 +1,144 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+enum CertificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  status    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendorProfile VendorProfile?
+  orders        Order[]
+  posts         CommunityPost[]
+}
+
+model VendorProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  farmName            String
+  farmLocation        String
+  certificationStatus String @default("PENDING")
+
+  user User @relation(fields: [userId], references: [id])
+
+  produce        Produce[]
+  rentalSpaces   RentalSpace[]
+  orders         Order[]
+  certifications SustainabilityCert[]
+
+  @@index([userId])
+}
+
+model Produce {
+  id String @id @default(uuid())
+
+  name                String
+  description         String
+  price               Float
+  category            String
+  certificationStatus String @default("PENDING")
+
+  availableQuantity Int
+  createdAt         DateTime @default(now())
+
+  vendorId String
+  vendor   VendorProfile @relation(fields: [vendorId], references: [id])
+
+  orders Order[]
+
+  @@index([vendorId])
+}
+
+model RentalSpace {
+  id String @id @default(uuid())
+
+  location     String
+  size         String
+  price        Float
+  availability Boolean @default(true)
+
+  vendorId String
+  vendor   VendorProfile @relation(fields: [vendorId], references: [id])
+
+  @@index([vendorId])
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  userId    String
+  produceId String
+  vendorId  String
+
+  status    String   @default("PENDING")
+  orderDate DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id])
+  produce Produce       @relation(fields: [produceId], references: [id])
+  vendor  VendorProfile @relation(fields: [vendorId], references: [id])
+
+  @@index([userId])
+  @@index([vendorId])
+  @@index([produceId])
+}
+
+model SustainabilityCert {
+  id String @id @default(uuid())
+
+  vendorId          String
+  certifyingAgency  String
+  certificationDate DateTime
+  status            String   @default("PENDING")
+
+  vendor VendorProfile @relation(fields: [vendorId], references: [id])
+
+  @@index([vendorId])
+}
+
+model CommunityPost {
+  id String @id @default(uuid())
+
+  userId      String
+  postContent String
+  postDate    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
